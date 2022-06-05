@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 import { MoodOptionType } from '../types';
 import { theme } from '../theme';
+import { useCallback } from 'react';
 
 const moodOptions: MoodOptionType[] = [
     { emoji: '🧑‍💻', description: 'studious' },
@@ -11,8 +12,19 @@ const moodOptions: MoodOptionType[] = [
     { emoji: '😤', description: 'frustrated' },
 ];
 
-export const MoodPicker: React.FC = () => {
-    const [selectedMood, setSelectedMood] = React.useState<MoodOptionType>();
+type MoocPickerProps = {
+    onSelect: (moodOption: MoodOptionType) => void;
+};
+
+export const MoodPicker: React.FC<MoocPickerProps> = ({ onSelect }) => {
+    const [selectedMood, setSelectedMood] = useState<MoodOptionType>();
+
+    const handleSelect = useCallback(() => {
+        if (selectedMood) {
+            onSelect(selectedMood);
+            setSelectedMood(undefined);
+        }
+    }, [selectedMood, onSelect]);
 
     return (
         <View style={styles.container}>
@@ -36,7 +48,10 @@ export const MoodPicker: React.FC = () => {
                     </View>
                 ))}
             </View>
-            <Pressable style={styles.button}>
+            <Pressable
+                style={styles.button}
+                onPress={handleSelect}
+            >
                 <Text style={styles.buttonText}>Choose</Text>
             </Pressable>
         </View>
